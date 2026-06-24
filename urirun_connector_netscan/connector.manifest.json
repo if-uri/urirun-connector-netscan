@@ -1,0 +1,47 @@
+{
+  "id": "netscan",
+  "name": "LAN scan for urirun nodes",
+  "uriSchemes": ["netscan"],
+  "status": "available",
+  "category": "Networking",
+  "summary": "Opt-in, read-only LAN discovery of urirun nodes over netscan:// — the mesh has no auto-discovery by design (it only refreshes configured/enrolled nodes), so this sweeps the local /24 on the node port and returns the nodes that answer GET /health, as candidates for the user to add.",
+  "description": "netscan:// fills the deliberate gap left by the explicit, key-enrolled mesh: there is no automatic node discovery, so a node must be known by URL before the host can reach it. netscan://host/lan/query/nodes runs a user-triggered, read-only sweep of the host's local /24 (or a given subnet) on the urirun node port (default 8765), probing GET /health concurrently and keeping only the hosts that answer as a urirun node (name, version, url, routeCount). netscan://host/host/query/probe checks a single host. It never connects, enrols or trusts a discovered node — it only surfaces candidates the user then adds (to host config / ~/.urirun/nodes.json) and which urifix can then resolve. Bounded by a short per-host timeout and a worker cap. Pairs with the host dashboard's Nodes view (a Scan button lists discovered nodes with an Add action) and urifix:// (which resolves a node URL once registered).",
+  "requires": {
+    "python": ["urirun"],
+    "optional": []
+  },
+  "keywords": ["netscan", "lan", "scan", "discovery", "node", "mesh", "network", "health"],
+  "publisher": {
+    "name": "if-uri",
+    "url": "https://ifuri.com",
+    "github": "https://github.com/if-uri"
+  },
+  "routes": [
+    "netscan://host/lan/query/nodes",
+    "netscan://host/host/query/probe"
+  ],
+  "useCases": [
+    "Find urirun nodes on the local network when one is not yet on the host's list.",
+    "Probe whether a specific host runs a urirun node.",
+    "Feed the dashboard Nodes view's Scan -> Add flow."
+  ],
+  "examples": [
+    {
+      "title": "Scan the local network for nodes",
+      "uri": "netscan://host/lan/query/nodes",
+      "payload": { "port": 8765 }
+    },
+    {
+      "title": "Probe one host",
+      "uri": "netscan://host/host/query/probe",
+      "payload": { "host": "192.168.188.201", "port": 8765 }
+    }
+  ],
+  "provenance": "verified",
+  "docsUrl": "https://github.com/if-uri/urirun-connector-netscan",
+  "install": {
+    "mode": "urirun-extra",
+    "pipSpec": "urirun-connector-netscan @ git+https://github.com/if-uri/urirun-connector-netscan.git@v0.1.0"
+  },
+  "adapterKinds": ["local-function"]
+}
