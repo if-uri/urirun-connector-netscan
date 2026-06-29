@@ -41,7 +41,7 @@ def local_ipv4() -> str:
 
 
 def local_subnet24(ip: str | None = None) -> str:
-    """The /24 the host sits on, e.g. 192.168.188.201 -> 192.168.188.0/24."""
+    """The /24 the host sits on, e.g. 192.0.2.1 -> 192.0.2.0/24."""
     ip = ip or local_ipv4()
     parts = ip.split(".")
     if len(parts) != 4 or not all(p.isdigit() for p in parts):

@@ -34,7 +34,7 @@
     {
       "title": "Probe one host",
       "uri": "netscan://host/host/query/probe",
-      "payload": { "host": "192.168.188.201", "port": 8765 }
+      "payload": { "host": "192.0.2.1", "port": 8765 }
     }
   ],
   "provenance": "verified",
