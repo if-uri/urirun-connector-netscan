@@ -12,7 +12,7 @@ _NODE_ITEM = {
     "name": "?str",
     "version": "?str",
     "routeCount": "?int",
-    "execute": "bool",
+    "execute": "?bool",
 }
 
 CONTRACTS: dict[str, Contract] = {
@@ -48,7 +48,8 @@ CONTRACTS: dict[str, Contract] = {
         effect="query",
         reversible=False,
         inp={"host": "str", "port": "?int", "timeout": "?num"},
-        out={"ok": "bool", "host": "str", "port": "int", "isNode": "bool", "node": "?obj"},
+        out={"ok": "bool", "host": "?str", "port": "?int", "isNode": "?bool",
+             "node": "?obj", "error": "?str"},
         errors=("precondition-unmet",),
         examples=(
             {

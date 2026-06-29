@@ -63,16 +63,13 @@ def test_probe_health_filters_non_node(monkeypatch):
 
 def test_contract_output_shape() -> None:
     """probe() live output must satisfy the declared out-schema (no network needed)."""
-    import importlib.util, sys
-    sys.path.insert(0, "/home/tom/github/if-uri/urirun-contract")
-    from urirun_connectors_toolkit.contract_gate import validate_output
-    spec = importlib.util.spec_from_file_location(
-        "contracts_netscan",
-        "/home/tom/github/if-uri/urirun-connector-netscan/urirun_connector_netscan/contracts.py",
-    )
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+    from urirun_connectors_toolkit.contract_gate import conform, validate_output
+    from urirun_connector_netscan.contracts import CONTRACTS
+
+    conform(CONTRACTS)
 
     # probe an unreachable host — isNode=False, no network timeout (0.05s)
     result = c.probe(host="127.0.0.1", port=19999, timeout=0.05)
-    validate_output(mod.CONTRACTS["host/query/probe"], result)
+    validate_output(CONTRACTS["host/query/probe"], result)
+    validate_output(CONTRACTS["host/query/probe"], c.probe(host=""))
+    validate_output(CONTRACTS["lan/query/nodes"], c.scan_lan(hosts=["127.0.0.1"], probe=lambda *_: None))
