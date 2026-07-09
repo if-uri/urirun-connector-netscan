@@ -21,8 +21,10 @@ from typing import Any, Callable
 
 import urirun
 
+from . import _urirun_compat
+
 CONNECTOR_ID = "netscan"
-NETSCAN = urirun.connector(CONNECTOR_ID, scheme="netscan", target="host",
+NETSCAN = _urirun_compat.connector(CONNECTOR_ID, scheme="netscan", target="host",
                            meta={"label": "LAN scan for urirun nodes"})
 
 DEFAULT_NODE_PORT = 8765
@@ -119,9 +121,28 @@ def probe(host: str = "", port: int = DEFAULT_NODE_PORT, timeout: float = 1.0) -
     return {"ok": True, "connector": CONNECTOR_ID, "kind": "node-probe", "live": False,
             "host": host, "port": int(port), "isNode": node is not None, "node": node}
 
+@NETSCAN.handler("netscan://host/doctor/query/report", isolated=True, meta={"label": "Connector readiness report"})
+def doctor() -> dict[str, Any]:
+    """Return a safe, read-only connector readiness report for CI smoke tests."""
+    return {
+        "ok": True,
+        "connector": CONNECTOR_ID,
+        "version": _connector_version(),
+        "status": "ready",
+    }
+
+
+def _connector_version() -> str:
+    try:
+        from importlib.metadata import version
+
+        return version("urirun-connector-netscan")
+    except Exception:
+        return "0.1.0"
+
 
 def main(argv: list[str] | None = None) -> int:
-    return NETSCAN.cli(argv, manifest_prose=urirun.load_manifest(__package__))
+    return NETSCAN.cli(argv, manifest_prose=_urirun_compat.load_manifest(__package__))
 
 
 urirun_bindings = NETSCAN.bindings
